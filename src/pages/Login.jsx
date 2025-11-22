@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,13 +10,14 @@ import { toast } from 'sonner';
 import { Package } from 'lucide-react';
 
 const roleRouteMap = {
+  // canonical role -> route
   admin: '/admin/dashboard',
-  superadmin: '/admin/dashboard',
+  superadmin: '/admin/dashboard', // example
   manager: '/manager/dashboard',
   i_manager: '/manager/dashboard',
   inventory_manager: '/manager/dashboard',
-  w_staff: '/warehouse/dashboard',
   warehouse: '/warehouse/dashboard',
+  w_staff: '/warehouse/dashboard',
   warehouse_staff: '/warehouse/dashboard',
   user: '/', // fallback
 };
@@ -34,6 +34,8 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // If a protected route redirected to /login it should set state: { from: location }
   const from = location.state?.from || null;
 
   const handleSubmit = async (e) => {
@@ -44,6 +46,8 @@ const Login = () => {
       const response = await authAPI.login({ email, password });
       const data = response?.data || response;
 
+      console.log('Login response:', data);
+
       const message = data?.message;
       const verificationRequired = data?.verificationRequired;
       const userFromServer = data?.user || null;
@@ -51,6 +55,7 @@ const Login = () => {
 
       if (verificationRequired) {
         toast.info('Please check your email for verification code');
+        // navigate to an OTP verify page, passing email or server-sent context
         navigate('/verify', { state: { email: data?.email || email, context: data } });
         setLoading(false);
         return;
@@ -62,11 +67,11 @@ const Login = () => {
         return;
       }
 
-      // Determine role from multiple possible locations
+      // find role from multiple possible locations
       const rawRole =
         data?.role ||
         data?.user?.role ||
-        (Array.isArray(data?.user?.roles) ? data.user.roles[0] : null) ||
+        data?.user?.roles?.[0] || // in case roles is an array
         null;
 
       const role = normalizeRole(rawRole);
@@ -78,6 +83,7 @@ const Login = () => {
         return;
       }
 
+      // Build user and token to store in auth context
       const userData = userFromServer || {
         id: 1,
         name: 'User',
@@ -86,22 +92,23 @@ const Login = () => {
       };
       const authToken = tokenFromServer || 'demo-token-12345';
 
+      // Save in auth context (assumes login(user, token) persists appropriately)
       login(userData, authToken);
       toast.success('Login successful!');
 
-      // If a protected route wanted to return, go there (but ensure role allows it)
+      // If the login was triggered by a protected route, go back there
       if (from) {
         navigate(from, { replace: true });
         setLoading(false);
         return;
       }
 
-      const target = roleRouteMap[role] || '/';
-      navigate(target, { replace: true });
+      // Map role to route (with fallback)
+      const roleRoute = roleRouteMap[role] || '/';
+      navigate(roleRoute, { replace: true });
+
     } catch (error) {
-      const message =
-        error?.response?.data?.message ||
-        'Login failed. Please try again.';
+      const message = error?.response?.data?.message || 'Login failed. Please try again.';
       console.error('Login error:', error);
       toast.error(message);
     } finally {
@@ -118,9 +125,7 @@ const Login = () => {
           </div>
           <div>
             <CardTitle className="text-2xl">Welcome to StockMaster</CardTitle>
-            <CardDescription>
-              Enter your credentials to access the inventory system
-            </CardDescription>
+            <CardDescription>Enter your credentials to access the inventory system</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
