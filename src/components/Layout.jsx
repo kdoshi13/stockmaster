@@ -9,7 +9,8 @@ import {
   X,
   User,
   Warehouse as WarehouseIcon,
-  MapPin as LocationIcon
+  MapPin as LocationIcon,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -22,12 +23,21 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const navItems = [
+  // Base navigation items
+  const baseNavItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
     { icon: ListChecks, label: 'Operations', path: '/operations' },
     { icon: Package, label: 'Products', path: '/products' },
     { icon: Repeat, label: 'Move History', path: '/moves' },
   ];
+
+  // Add Admin Dashboard for admin users
+  const navItems = user?.role === 'admin' || user?.role === 'superadmin'
+    ? [
+        { icon: Shield, label: 'Admin', path: '/admin' },
+        ...baseNavItems
+      ]
+    : baseNavItems;
 
   // Show settings tabs whenever we are on warehouse/location routes
   useEffect(() => {
@@ -219,6 +229,7 @@ const Layout = () => {
               if (top) return top.label;
               if (location.pathname === '/warehouse') return 'Warehouse';
               if (location.pathname === '/location') return 'Location';
+              if (location.pathname === '/admin') return 'Admin Dashboard';
               return 'StockMaster';
             })()}
           </h2>

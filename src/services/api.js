@@ -70,4 +70,55 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
 };
 
+// Users APIs (Admin)
+export const usersAPI = {
+  getAll: () => api.get('/users'),
+  getById: (id) => api.get(`/users/${id}`),
+  update: (id, data) => api.put(`/users/${id}`, data),
+  delete: (id) => api.delete(`/users/${id}`),
+  updatePassword: (id, newPassword) => api.put(`/users/${id}/password`, { newPassword }),
+  getStats: () => api.get('/users/stats/overview'),
+};
+
+// Locations APIs
+export const locationsAPI = {
+  getAll: () => api.get('/locations'),
+  getById: (id) => api.get(`/locations/${id}`),
+  create: (data) => api.post('/locations', data),
+  update: (id, data) => api.put(`/locations/${id}`, data),
+  delete: (id) => api.delete(`/locations/${id}`),
+};
+
+// Vendors APIs
+export const vendorsAPI = {
+  getAll: () => api.get('/vendors'),
+  getById: (id) => api.get(`/vendors/${id}`),
+  create: (data) => api.post('/vendors', data),
+  update: (id, data) => api.put(`/vendors/${id}`, data),
+  delete: (id) => api.delete(`/vendors/${id}`),
+};
+
+// Stock APIs
+export const stockAPI = {
+  getAll: () => api.get('/stock'),
+  getMovements: () => api.get('/stock/movements'),
+  getByProduct: (productId) => api.get(`/stock/product/${productId}`),
+  getByLocation: (locationId) => api.get(`/stock/location/${locationId}`),
+};
+
+// Transfers APIs
+export const transfersAPI = {
+  getAll: () => api.get('/transfers'),
+  getById: (id) => api.get(`/transfers/${id}`),
+  create: (data) => api.post('/transfers', data),
+  validate: (id) => api.put(`/transfers/${id}/validate`),
+};
+
+// Adjustments APIs
+export const adjustmentsAPI = {
+  getAll: () => api.get('/adjustments'),
+  getById: (id) => api.get(`/adjustments/${id}`),
+  create: (data) => api.post('/adjustments', data),
+};
+
 export default api;

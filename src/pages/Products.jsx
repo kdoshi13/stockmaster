@@ -6,8 +6,10 @@ import ProductModal from '@/components/ProductModal';
 import DeleteDialog from '@/components/DeleteDialog';
 import { toast } from 'sonner';
 import { productsAPI } from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Products = () => {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,14 +62,15 @@ const Products = () => {
         toast.success('Product updated successfully');
         await fetchProducts(); // Refresh the list
       } else {
-        // Create new product
+        // Create new product - include created_by field
         await productsAPI.create({
           id_code: productData.id_code,
           name: productData.name,
           category: productData.category,
           unit_of_measure: productData.unit_of_measure,
           reorder_threshold: productData.reorder_threshold,
-          reorder_target: productData.reorder_target
+          reorder_target: productData.reorder_target,
+          created_by: user?.id
         });
         toast.success('Product added successfully');
         await fetchProducts(); // Refresh the list
@@ -76,16 +79,19 @@ const Products = () => {
       setEditingProduct(null);
     } catch (error) {
       console.error('Error saving product:', error);
-      toast.error('Failed to save product');
+      // Display specific error message if available, otherwise generic
+      const errorMessage = error.response?.data?.message || 'Failed to save product';
+      toast.error(errorMessage);
     }
   };
 
   const handleDeleteConfirm = async () => {
+    if (!deleteProduct) return;
     try {
       await productsAPI.delete(deleteProduct.id);
       toast.success('Product deleted successfully');
       await fetchProducts(); // Refresh the list
-      setDeleteProduct(null);
+      setDeleteProduct(null); // Close the dialog
     } catch (error) {
       console.error('Error deleting product:', error);
       toast.error('Failed to delete product');
@@ -130,7 +136,7 @@ const Products = () => {
         />
       </div>
 
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted">

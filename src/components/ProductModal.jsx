@@ -7,23 +7,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const ProductModal = ({ open, onClose, onSave, product }) => {
   const [formData, setFormData] = useState({
+    id_code: '',
     name: '',
-    sku: '',
     category: '',
-    unit: '',
-    stock: 0,
+    unit_of_measure: '',
+    reorder_threshold: 0,
+    reorder_target: 0,
   });
 
   useEffect(() => {
     if (product) {
-      setFormData(product);
+      setFormData({
+        id_code: product.id_code || '',
+        name: product.name || '',
+        category: product.category || '',
+        unit_of_measure: product.unit_of_measure || '',
+        reorder_threshold: product.reorder_threshold || 0,
+        reorder_target: product.reorder_target || 0,
+      });
     } else {
       setFormData({
+        id_code: '',
         name: '',
-        sku: '',
         category: '',
-        unit: '',
-        stock: 0,
+        unit_of_measure: '',
+        reorder_threshold: 0,
+        reorder_target: 0,
       });
     }
   }, [product, open]);
@@ -42,21 +51,23 @@ const ProductModal = ({ open, onClose, onSave, product }) => {
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Product Name</Label>
+              <Label htmlFor="id_code">ID Code</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                id="id_code"
+                value={formData.id_code}
+                onChange={(e) => setFormData({ ...formData, id_code: e.target.value })}
+                placeholder="Enter product ID code"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sku">SKU</Label>
+              <Label htmlFor="name">Product Name</Label>
               <Input
-                id="sku"
-                value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter product name"
                 required
               />
             </div>
@@ -78,28 +89,44 @@ const ProductModal = ({ open, onClose, onSave, product }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
-              <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
+              <Label htmlFor="unit_of_measure">Unit of Measure</Label>
+              <Select value={formData.unit_of_measure} onValueChange={(value) => setFormData({ ...formData, unit_of_measure: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select unit" />
+                  <SelectValue placeholder="Select unit of measure" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50">
                   <SelectItem value="Piece">Piece</SelectItem>
                   <SelectItem value="Box">Box</SelectItem>
                   <SelectItem value="Kg">Kg</SelectItem>
                   <SelectItem value="Liter">Liter</SelectItem>
+                  <SelectItem value="Meter">Meter</SelectItem>
+                  <SelectItem value="Pack">Pack</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="stock">Initial Stock</Label>
+              <Label htmlFor="reorder_threshold">Reorder Threshold</Label>
               <Input
-                id="stock"
+                id="reorder_threshold"
                 type="number"
                 min="0"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                value={formData.reorder_threshold}
+                onChange={(e) => setFormData({ ...formData, reorder_threshold: parseInt(e.target.value) || 0 })}
+                placeholder="Minimum stock level before reordering"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reorder_target">Reorder Target</Label>
+              <Input
+                id="reorder_target"
+                type="number"
+                min="0"
+                value={formData.reorder_target}
+                onChange={(e) => setFormData({ ...formData, reorder_target: parseInt(e.target.value) || 0 })}
+                placeholder="Target stock level after reordering"
                 required
               />
             </div>

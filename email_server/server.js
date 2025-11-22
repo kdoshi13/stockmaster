@@ -16,6 +16,7 @@ import stockRoutes from './stockRoutes.js';
 import transferRoutes from './transferRoutes.js';
 import adjustmentRoutes from './adjustmentRoutes.js';
 import dashboardRoutes from './dashboardRoutes.js';
+import userRoutes from './userRoutes.js';
 import { db } from './database.js';
 
 // 2. Configure environment variables
@@ -65,6 +66,9 @@ app.use('/api/adjustments', adjustmentRoutes);
 
 // Dashboard routes
 app.use('/api/dashboard', dashboardRoutes);
+
+// Users routes
+app.use('/api/users', userRoutes);
 
 // Stock movement history endpoint
 app.get('/api/stock/movements', (req, res) => {
@@ -121,4 +125,7 @@ app.listen(PORT, () => {
   console.log(`  GET  /api/transfers`);
   console.log(`  GET  /api/adjustments`);
   console.log(`  GET  /api/dashboard/stats`);
+  console.log(`  GET  /api/users`);
+  console.log(`  PUT  /api/users/:id`);
+  console.log(`  DELETE /api/users/:id`);
 });

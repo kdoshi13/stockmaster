@@ -18,6 +18,7 @@ import Warehouse from "./pages/Warehouse";
 import Location from "./pages/Location";
 import MoveHistory from "./pages/MoveHistory";
 import Operations from "./pages/Operations";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,14 @@ const App = () => (
               <Route index element={<Dashboard />} />
 
               {/* Admin-only */}
+              <Route
+                path="admin"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="operations"
                 element={
