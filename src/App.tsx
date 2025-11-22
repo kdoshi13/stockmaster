@@ -1,9 +1,9 @@
-
+// src/App.jsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
@@ -15,10 +15,16 @@ import CreateReceipt from "./pages/CreateReceipt";
 import Delivery from "./pages/Delivery";
 import CreateDelivery from "./pages/CreateDelivery";
 import NotFound from "./pages/NotFound";
-import Warehouse from "./pages/Warehouse";
-import Location from "./pages/Location";
 import MoveHistory from "./pages/MoveHistory";
 import Operations from "./pages/Operations";
+
+// role-specific dashboards
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManagerDashboard from "./pages/manager/ManagerDashboard";
+import WarehouseDashboard from "./pages/warehouse/WarehouseDashboard";
+
+import Warehouse from "./pages/Warehouse";
+import Location from "./pages/Location";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +38,7 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<Login />} />
 
-            {/* All routes under Layout require authentication */}
+            {/* Protected layout */}
             <Route
               path="/"
               element={
@@ -41,10 +47,38 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              {/* Dashboard - available to any authenticated user */}
+              {/* Generic dashboard reachable by any authenticated user (optional) */}
               <Route index element={<Dashboard />} />
 
-              {/* Admin-only */}
+              {/* Role-specific dashboards */}
+              <Route
+                path="admin/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="manager/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["manager", "i_manager", "inventory_manager"]}>
+                    <ManagerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="warehouse/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["w_staff", "warehouse", "warehouse_staff"]}>
+                    <WarehouseDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Other routes with role checks */}
               <Route
                 path="operations"
                 element={
@@ -54,7 +88,6 @@ const App = () => (
                 }
               />
 
-              {/* Products - admin & manager */}
               <Route
                 path="products"
                 element={
@@ -64,7 +97,6 @@ const App = () => (
                 }
               />
 
-              {/* Receipts - admin & manager */}
               <Route
                 path="receipts"
                 element={
@@ -82,7 +114,6 @@ const App = () => (
                 }
               />
 
-              {/* Delivery - admin, manager, warehouse staff */}
               <Route
                 path="delivery"
                 element={
@@ -100,7 +131,6 @@ const App = () => (
                 }
               />
 
-              {/* Warehouse / Location / Moves - warehouse staff & admin */}
               <Route
                 path="warehouse"
                 element={
@@ -136,4 +166,3 @@ const App = () => (
 );
 
 export default App;
-
