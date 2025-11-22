@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +31,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+
+            {/* All routes under Layout require authentication */}
             <Route
               path="/"
               element={
@@ -38,20 +41,90 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
+              {/* Dashboard - available to any authenticated user */}
               <Route index element={<Dashboard />} />
-              <Route path="operations" element={<Operations />} />
-              <Route path="products" element={<Products />} />
-              <Route path="receipts" element={<Receipts />} />
-              <Route path="receipts/create" element={<CreateReceipt />} />
-              <Route path="delivery" element={<Delivery />} />
-              <Route path="delivery/create" element={<CreateDelivery />} />
 
-              {/* Top-level settings-related pages (no Settings home) */}
-              <Route path="warehouse" element={<Warehouse />} />
-              <Route path="location" element={<Location />} />
+              {/* Admin-only */}
+              <Route
+                path="operations"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+                    <Operations />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* Move History (top-level path) */}
-              <Route path="moves" element={<MoveHistory />} />
+              {/* Products - admin & manager */}
+              <Route
+                path="products"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "manager", "i_manager"]}>
+                    <Products />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Receipts - admin & manager */}
+              <Route
+                path="receipts"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "manager", "i_manager"]}>
+                    <Receipts />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="receipts/create"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "manager", "i_manager"]}>
+                    <CreateReceipt />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Delivery - admin, manager, warehouse staff */}
+              <Route
+                path="delivery"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "manager", "i_manager", "w_staff", "warehouse_staff"]}>
+                    <Delivery />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="delivery/create"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "manager", "i_manager", "w_staff", "warehouse_staff"]}>
+                    <CreateDelivery />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Warehouse / Location / Moves - warehouse staff & admin */}
+              <Route
+                path="warehouse"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "w_staff", "warehouse_staff"]}>
+                    <Warehouse />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="location"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "w_staff", "warehouse_staff"]}>
+                    <Location />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="moves"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "w_staff", "warehouse_staff"]}>
+                    <MoveHistory />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
 
             <Route path="*" element={<NotFound />} />
@@ -63,3 +136,4 @@ const App = () => (
 );
 
 export default App;
+
