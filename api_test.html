@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>StockMaster API Connection Test</h1>
+        
+        <div class="test">
+            <h3>1. Test Dashboard API</h3>
+            <button onclick="testDashboard()">Test Dashboard</button>
+            <div id="dashboard-result"></div>
+        </div>
+        
+        <div class="test">
+            <h3>2. Test Login</h3>
+            <button onclick="testLogin()">Test Login</button>
+            <div id="login-result"></div>
+        </div>
+        
+        <div class="test">
+            <h3>3. Test Products API</h3>
+            <button onclick="testProducts()">Test Products</button>
+            <div id="products-result"></div>
+        </div>
+        
+        <div class="test">
+            <h3>4. Test Locations API</h3>
+            <button onclick="testLocations()">Test Locations</button>
+            <div id="locations-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        async function testDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/stats`);
+                const data = await response.json();
+                document.getElementById('dashboard-result').innerHTML = 
+                    `<div class="success">✅ Success</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('dashboard-result').innerHTML = 
+                    `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogin() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'kevaldoshi34223@gmail.com',
+                        password: 'admin123'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', 'test-token');
+                    document.getElementById('login-result').innerHTML = 
+                        `<div class="success">✅ Login Successful</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    document.getElementById('login-result').innerHTML = 
+                        `<div class="error">❌ Login Failed</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                document.getElementById('login-result').innerHTML = 
+                    `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                document.getElementById('products-result').innerHTML = 
+                    `<div class="success">✅ Success - ${data.length} products</div><pre>${JSON.stringify(data.slice(0, 3), null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('products-result').innerHTML = 
+                    `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLocations() {
+            try {
+                const response = await fetch(`${API_BASE}/locations`);
+                const data = await response.json();
+                document.getElementById('locations-result').innerHTML = 
+                    `<div class="success">✅ Success - ${data.length} locations</div><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('locations-result').innerHTML = 
+                    `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Test automatically on page load
+        window.onload = function() {
+            testDashboard();
+        };
+    </script>
+</body>
+</html>
