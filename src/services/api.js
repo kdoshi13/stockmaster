@@ -69,6 +69,12 @@ export const deliveriesAPI = {
 export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
 };
+// Move / Stock Ledger APIs
+export const stockAPI = {
+  getMovements: () => api.get('/stock/movements'),
+  getStockFallback: () => api.get('/stock'),
+};
+
 
 // Users APIs (Admin)
 export const usersAPI = {

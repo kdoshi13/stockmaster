@@ -126,7 +126,7 @@ const Layout = () => {
 
               {/* Logo + title */}
               <div className="flex items-center gap-3">
-                <img src="/mnt/data/StockMaster.svg" alt="StockMaster" className="h-8 w-auto" />
+                
                 <h1 className="text-xl font-semibold text-foreground">StockMaster</h1>
               </div>
 
